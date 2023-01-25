@@ -1,36 +1,35 @@
 from django.contrib import admin
+from django.db.models import QuerySet
 
-from circuit.models import BaseModel, Structures, Product, Contact, Address, Chain
+from circuit.models import InfoChain, Chain, Staff, Product, Contact
 
 
 # Register your models here.
-@admin.register(BaseModel)
-class BaseModelAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'contacts', 'products', 'staff', 'suppler', 'debt', 'date_creation')
-    list_display_links = ('title',)
-    search_fields = ('title', 'id')
+
+@admin.register(InfoChain)
+class InfoChain(admin.ModelAdmin):
+    list_display = ('id', 'title', 'products', 'supplier', 'debt', 'date_creation')
+    list_display_links = ('supplier', 'title')
+    list_filter = ('contacts__city',)
+    actions = ['cancellation']
+
+    @admin.action(description='Аннулировать задолженость')
+    def cancellation(self, requests, q: QuerySet):
+        q.update(debt=0)
 
 
-@admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ('id', 'country', 'city', 'street', 'number_house')
-
-
-@admin.register(Contact)
-class ContactAdmin(admin.ModelAdmin):
-    list_display = ('email', 'address')
+@admin.register(Staff)
+class Staff(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'is_active',)
+    list_display_links = ('id', 'first_name', 'last_name', 'is_active')
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'model', 'date')
+class Product(admin.ModelAdmin):
+    list_display = ('id', 'title_product', 'model', 'date')
+    list_display_links = ('id', 'title_product', 'model', 'date')
 
 
-@admin.register(Structures)
-class StructuresAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title')
-
-
-@admin.register(Chain)
-class ChainAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'structure')
+@admin.register(Contact)
+class Product(admin.ModelAdmin):
+    list_display = ('id', 'email', 'country', 'city', 'street', 'number_house')

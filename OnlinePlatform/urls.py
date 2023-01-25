@@ -21,5 +21,13 @@ from circuit import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('base_model', views.BaseModelView.as_view(), name='Base Model'),
+    path('all_chain/', views.ChainListView.as_view(), name='all_chain'),
+    path('country/', views.InfoChainCountry.as_view(), name='search_country'),
+    path('staticdebt/', views.StaticDebt.as_view(), name='debt'),
+    path('product/', views.IdProduct.as_view(), name='search_product_id'),
+    path('create_chain/', views.CreateChain.as_view(), name='create_chain'),
+    path('create_product/', views.CreateProduct.as_view(), name='create_product'),
+    path('create_staff/', views.CreateStaff.as_view(), name='create_staff'),
+    path('update_chain/<int:pk>', views.UpdateInfoChain.as_view(), name='update_chain'),
+
 ]
