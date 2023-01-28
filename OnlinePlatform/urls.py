@@ -26,8 +26,8 @@ urlpatterns = [
     path('staticdebt/', views.StaticDebt.as_view(), name='debt'),
     path('product/', views.IdProduct.as_view(), name='search_product_id'),
     path('create_chain/', views.CreateChain.as_view(), name='create_chain'),
-    path('create_product/', views.CreateProduct.as_view(), name='create_product'),
-    path('create_staff/', views.CreateStaff.as_view(), name='create_staff'),
-    path('update_chain/<int:pk>', views.UpdateInfoChain.as_view(), name='update_chain'),
+    path('create_staff/<int:pk>', views.CreateStaff.as_view(), name='create_staff'),
+    path('update_chain/<int:pk>', views.UpdateChain.as_view(), name='update_chain'),
+    path('delete_chain/<int:pk>', views.DestroyChain.as_view(), name='delete_chain'),
 
 ]

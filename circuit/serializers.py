@@ -34,7 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ('username', 'first_name', 'last_name', 'password', 'is_active',)
+        fields = ('username', 'first_name', 'last_name', 'is_active')
 
     def create(self, validated_data):
         staff = super().create(validated_data)
@@ -56,46 +56,38 @@ class InfoChainSerializer(serializers.ModelSerializer):
     supplier = ChainSerializer()
     products = ProductSerializer()
 
-    # structure = StructureSerializer()
-
     class Meta:
         model = InfoChain
         fields = '__all__'
 
 
 class UpdateChainSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(max_length=255)
     contacts = ContactSerializer()
     products = ProductSerializer()
-
-    # structure = StructureSerializer()
+    debt = serializers.FloatField()
 
     class Meta:
         model = InfoChain
-        fields = ('title', 'contacts', 'supplier', 'products')
+        fields = ('title', 'contacts', 'products', 'debt')
 
     def update(self, instance, validated_data):
         title = validated_data.pop('title')
-        supplier = validated_data.pop('supplier')
         products_ = validated_data.pop('products')
         products = Product.objects.update(**products_)
         contacts_ = validated_data.pop('contacts')
         contacts = Contact.objects.update(**contacts_)
-        #
-        chain = InfoChain.objects.update(
+        debt = validated_data.pop('debt')
+
+        instance = InfoChain.objects.update(
             title=title,
             structure=InfoChain.structure,
-            supplier=supplier,
             products=products,
             contacts=contacts,
+            debt=debt
 
         )
-        instance.save()
         return instance
-
-    # def save(self, **kwargs):
-    #     chain = super().save()
-    #     chain.save()
-    #     return chain
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -115,14 +107,16 @@ class SupplierSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ChainCreateSerializer(serializers.ModelSerializer):
+class CreateChainSerializer(serializers.ModelSerializer):
     staff = StaffSerializer()
     products = ProductSerializer()
     contacts = ContactSerializer()
+    supplier = serializers.SlugRelatedField(slug_field='title', queryset=InfoChain.Suppler.objects.all(),
+                                            allow_null=True)
 
     class Meta:
         model = InfoChain
-        fields = ('title', 'structure', 'staff', 'contacts', 'supplier', 'products')
+        fields = ('title', 'structure', 'contacts', 'supplier', 'products', 'staff')
 
     def create(self, validated_data):
         title = validated_data.pop('title')
@@ -143,6 +137,4 @@ class ChainCreateSerializer(serializers.ModelSerializer):
             contacts=contacts,
 
         )
-
-        print(chain.structure)
         return chain

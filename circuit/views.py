@@ -1,28 +1,28 @@
 from statistics import mean
 
+from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render
 from django_filters import FilterSet, AllValuesFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from requests import request
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework import filters, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from circuit.models import Chain, InfoChain, Product, Staff
-from circuit.permissions import ListPermissions
-from circuit.serializers import InfoChainSerializer, ChainCreateSerializer, ProductCreateSerializer, ProductSerializer, \
-    SupplierSerializer, StaffSerializer, UpdateChainSerializer
+from circuit.permissions import Permissions
+from circuit.serializers import ChainSerializer, CreateChainSerializer, InfoChainSerializer, StaffSerializer, \
+    UpdateChainSerializer
 
 
 class ChainListView(ListAPIView):
     model = InfoChain
     serializer_class = InfoChainSerializer
-    permission_classes = [ListPermissions]
+    permission_classes = [Permissions]
 
     def get_queryset(self):
-        print([x for x in InfoChain.objects.all()])
         return InfoChain.objects.all()
 
 
@@ -30,6 +30,7 @@ class InfoChainCountry(ListAPIView):
     model = InfoChain
     serializer_class = InfoChainSerializer
     filter_backends = [DjangoFilterBackend]
+    permission_classes = [Permissions]
     filterset_fields = ('contacts__address__country',)
 
     def get_queryset(self):
@@ -40,6 +41,7 @@ class StaticDebt(ListAPIView):
     model = InfoChain
     serializer_class = InfoChainSerializer
     filter_backends = [DjangoFilterBackend]
+    permission_classes = [Permissions]
 
     def get_queryset(self):
         debt = []
@@ -54,20 +56,36 @@ class IdProduct(ListAPIView):
     model = InfoChain
     serializer_class = InfoChainSerializer
     filter_backends = [DjangoFilterBackend]
+    permission_classes = [Permissions]
     filterset_fields = ('products__id',)
 
     def get_queryset(self):
         return InfoChain.objects.all()
 
 
-class CreateChain(CreateAPIView):
-    model = InfoChain
-    serializer_class = ChainCreateSerializer
+class CreateChain(APIView):
+    permission_classes = [Permissions]
+
+    def post(self, request):
+        serializer = CreateChainSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.validated_data)
 
 
-class CreateProduct(CreateAPIView):
-    model = Chain.Suppler
-    serializer_class = SupplierSerializer
+class UpdateChain(APIView):
+    permission_classes = [Permissions]
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+
+        if not pk:
+            return Response({'Error': "error pk"})
+        instance = InfoChain.objects.get(pk=pk)
+        serializer = UpdateChainSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.validated_data)
 
 
 class CreateStaff(CreateAPIView):
@@ -75,7 +93,11 @@ class CreateStaff(CreateAPIView):
     serializer_class = StaffSerializer
 
 
-class UpdateInfoChain(UpdateAPIView):
-    queryset = InfoChain.objects.filter()
-    model = InfoChain
-    serializer_class = UpdateChainSerializer
+class DestroyChain(DestroyAPIView):
+    queryset = InfoChain.objects.all()
+
+    def perform_destroy(self, instance: InfoChain):
+        instance.delete()
+        instance.products.delete()
+        instance.contacts.delete()
+        return instance

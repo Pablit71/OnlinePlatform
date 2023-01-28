@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission
 from circuit.models import Staff
 
 
-class ListPermissions(BasePermission):
+class Permissions(BasePermission):
     message = "No men"
 
     def has_permission(self, request, view):

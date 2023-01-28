@@ -18,7 +18,6 @@ class Chain(models.Model):
 
     title = models.CharField(verbose_name="Название сети", max_length=255)
     structure = models.CharField(verbose_name='Структура', choices=Suppler.CHOICES, max_length=255)
-    debt = models.FloatField(verbose_name='Задолженность', null=True, blank=True)
     date_creation = models.DateTimeField(verbose_name='Дата создания', auto_now_add=True)
 
     def __str__(self):
@@ -67,11 +66,13 @@ class InfoChain(Chain):
         verbose_name = "Информация сети"
         verbose_name_plural = "Информация сетей"
 
-    staff = models.ForeignKey(Staff, verbose_name='Сотрудники', related_name='staff', on_delete=models.CASCADE)
-    products = models.ForeignKey(Product, verbose_name='Продукты', related_name='product', on_delete=models.CASCADE)
-    contacts = models.ForeignKey(Contact, verbose_name='Контакты', on_delete=models.CASCADE)
+    staff = models.ForeignKey(Staff, verbose_name='Сотрудники', related_name='staff', on_delete=models.DO_NOTHING,
+                              blank=True, null=True)
+    products = models.ForeignKey(Product, verbose_name='Продукты', related_name='product', on_delete=models.DO_NOTHING)
+    contacts = models.ForeignKey(Contact, verbose_name='Контакты', on_delete=models.DO_NOTHING)
     supplier = models.ForeignKey(Chain, verbose_name='Главный поставщик', on_delete=models.DO_NOTHING,
                                  related_name='suppler', blank=True, null=True)
+    debt = models.FloatField(verbose_name='Задолженность', null=True, blank=True)
 
     def __str__(self):
-        return f'{self.title} {self.debt} {self.products} {self.staff}'
+        return f'{self.title} {self.debt} {self.products} {self.staff} {self.supplier}'
