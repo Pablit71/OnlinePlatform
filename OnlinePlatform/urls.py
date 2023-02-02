@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from .yasg import urlpatterns as swagger
 
 from circuit import views
 
@@ -31,3 +32,5 @@ urlpatterns = [
     path('delete_chain/<int:pk>', views.DestroyChain.as_view(), name='delete_chain'),
 
 ]
+
+urlpatterns += swagger
