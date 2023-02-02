@@ -1,5 +1,4 @@
-from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -66,10 +65,10 @@ class InfoChain(Chain):
         verbose_name = "Информация сети"
         verbose_name_plural = "Информация сетей"
 
-    staff = models.ForeignKey(Staff, verbose_name='Сотрудники', related_name='staff', on_delete=models.DO_NOTHING,
+    staff = models.ForeignKey(Staff, verbose_name='Сотрудники', related_name='staff', on_delete=models.CASCADE,
                               blank=True, null=True)
-    products = models.ForeignKey(Product, verbose_name='Продукты', related_name='product', on_delete=models.DO_NOTHING)
-    contacts = models.ForeignKey(Contact, verbose_name='Контакты', on_delete=models.DO_NOTHING)
+    products = models.ForeignKey(Product, verbose_name='Продукты', related_name='product', on_delete=models.CASCADE)
+    contacts = models.ForeignKey(Contact, verbose_name='Контакты', on_delete=models.CASCADE)
     supplier = models.ForeignKey(Chain, verbose_name='Главный поставщик', on_delete=models.DO_NOTHING,
                                  related_name='suppler', blank=True, null=True)
     debt = models.FloatField(verbose_name='Задолженность', null=True, blank=True)

@@ -1,12 +1,8 @@
 from rest_framework.permissions import BasePermission
 
-from circuit.models import Staff
-
 
 class Permissions(BasePermission):
-    message = "No men"
-
     def has_permission(self, request, view):
-        if request.user:
+        if request.user.is_active:
             return True
         return False

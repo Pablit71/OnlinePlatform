@@ -1,19 +1,14 @@
 from statistics import mean
 
 from django.db import transaction
-from django.http import JsonResponse
-from django.shortcuts import render
-from django_filters import FilterSet, AllValuesFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from requests import request
-from rest_framework.generics import ListAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework import filters, status
+from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from circuit.models import Chain, InfoChain, Product, Staff
+from circuit.models import InfoChain, Staff
 from circuit.permissions import Permissions
-from circuit.serializers import ChainSerializer, CreateChainSerializer, InfoChainSerializer, StaffSerializer, \
+from circuit.serializers import CreateChainSerializer, InfoChainSerializer, StaffSerializer, \
     UpdateChainSerializer
 
 
@@ -97,7 +92,8 @@ class DestroyChain(DestroyAPIView):
     queryset = InfoChain.objects.all()
 
     def perform_destroy(self, instance: InfoChain):
-        instance.delete()
-        instance.products.delete()
-        instance.contacts.delete()
+        with transaction.atomic():
+            instance.delete()
+            instance.products.delete()
+            instance.contacts.delete()
         return instance

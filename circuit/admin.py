@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import QuerySet
 
-from circuit.models import InfoChain, Chain, Staff, Product, Contact
+from circuit.models import InfoChain, Product, Contact, Staff
 
 
 # Register your models here.
@@ -22,6 +22,7 @@ class InfoChain(admin.ModelAdmin):
 class Staff(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'is_active',)
     list_display_links = ('id', 'first_name', 'last_name', 'is_active')
+    exclude = ('password', 'groups', 'user_permissions', 'date_joined', 'email', 'last_login')
 
 
 @admin.register(Product)

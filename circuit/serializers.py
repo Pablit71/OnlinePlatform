@@ -1,15 +1,5 @@
-import json
-from http.client import HTTPResponse
 
-import django_filters
-import requests
-from django.forms import model_to_dict
-from django.http import JsonResponse
-from django_filters import CharFilter
-from django_filters.rest_framework import FilterSet
 from rest_framework import serializers
-from rest_framework.relations import PrimaryKeyRelatedField
-
 from circuit.models import InfoChain, Chain, Staff, Product, Contact
 
 
@@ -34,12 +24,12 @@ class ProductSerializer(serializers.ModelSerializer):
 class StaffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Staff
-        fields = ('username', 'first_name', 'last_name', 'is_active')
+        fields = ('username', 'first_name', 'last_name', 'is_active', 'password')
 
     def create(self, validated_data):
         staff = super().create(validated_data)
         staff.set_password(staff.password)
-
+        print(validated_data)
         staff.save()
         return staff
 
@@ -122,7 +112,7 @@ class CreateChainSerializer(serializers.ModelSerializer):
         title = validated_data.pop('title')
         supplier = validated_data.pop('supplier')
         staff_ = validated_data.pop('staff')
-        staff = Staff.objects.create(**staff_)
+        staff = Staff.objects.create_user(**staff_)
         products_ = validated_data.pop('products')
         products = Product.objects.create(**products_)
         contacts_ = validated_data.pop('contacts')
