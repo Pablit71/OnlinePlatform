@@ -27,7 +27,7 @@ urlpatterns = [
     path('product/', views.IdProduct.as_view(), name='search_product_id'),
     path('create_chain/', views.CreateChain.as_view(), name='create_chain'),
     path('create_staff/', views.CreateStaff.as_view(), name='create_staff'),
-    path('update_chain/<int:pk>', views.UpdateChain.as_view(), name='update_chain'),
+    path('update_chain/<int:pk>', views.UpdateChain.as_view(), name='update_chain/(?P<pk>[0-9]+)\\Z'),
     path('delete_chain/<int:pk>', views.DestroyChain.as_view(), name='delete_chain'),
 
 ]

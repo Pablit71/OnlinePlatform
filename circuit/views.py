@@ -26,7 +26,7 @@ class InfoChainCountry(ListAPIView):
     serializer_class = InfoChainSerializer
     filter_backends = [DjangoFilterBackend]
     permission_classes = [Permissions]
-    filterset_fields = ('contacts__address__country',)
+    filterset_fields = ('contacts__country',)
 
     def get_queryset(self):
         return InfoChain.objects.all()
